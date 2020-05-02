@@ -1,0 +1,18 @@
+body {
+  background-color: #ddd;
+}
+.card {
+  background-color: #f1f1f1;
+}
+.list-group {
+  max-height: calc(100vh - 168px);
+  overflow: auto;
+}
+.item-active {
+  background-color: rgb(240, 227, 241);
+}
+@media (max-width: 768px) {
+  .container {
+    min-width: 100%;
+  }
+}
