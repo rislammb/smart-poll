@@ -10,21 +10,27 @@ import {
 
 import { PollContext } from '../../context/poll';
 import PollOptions from './PollOptions';
-import { validate } from './validate';
+import { validate, validateDesOpt } from './validate';
 
 const PollForm = () => {
   const { isEdit, poll, createPoll, editPoll } = useContext(PollContext);
+  const [creator, setCreator] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [options, setOptions] = useState([
-    { id: 34245452644, name: '' },
-    { id: 34245467238, name: '' },
+    { id: Math.round(Math.random() * 1000000000000), name: '' },
+    { id: Math.round(Math.random() * 1000000000000), name: '' },
   ]);
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     let newErrors = { ...errors };
     switch (e.target.name) {
+      case 'creator':
+        newErrors.creator = '';
+        setErrors(newErrors);
+        setCreator(e.target.value);
+        break;
       case 'title':
         newErrors.title = '';
         setErrors(newErrors);
@@ -51,30 +57,32 @@ const PollForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const newOptions = options.filter((opt) => opt.name.trim() !== '');
-    const { errors, valid } = validate(title, description, newOptions);
-    if (valid) {
-      if (!isEdit) {
+
+    if (!isEdit) {
+      const { errors, valid } = validate(
+        creator,
+        title,
+        description,
+        newOptions
+      );
+      if (valid) {
         const newPoll = {
-          id: Math.round(Math.random() * 1000000000000) + 9,
+          creator,
           title,
           description,
-          totalVote: 0,
-          options: newOptions.map((opt) => {
-            return {
-              id: Math.round(Math.random() * 1000000000000) + 3,
-              name: opt.name.trim(),
-              vote: 0,
-            };
-          }),
+          options: newOptions,
         };
         createPoll(newPoll);
       } else {
+        setErrors(errors);
+      }
+    } else {
+      const { errors2, valid } = validateDesOpt(description, newOptions);
+      if (valid) {
         let totalVote = 0;
         const votedOptions = newOptions.filter((opt) => opt.vote);
         votedOptions.map((opt) => (totalVote += opt.vote));
         const editedPoll = {
-          id: poll.id,
-          title,
           description,
           totalVote,
           options: newOptions.map((opt) => {
@@ -88,10 +96,10 @@ const PollForm = () => {
           }),
         };
         editPoll(editedPoll);
+        setErrors({});
+      } else {
+        setErrors(errors2);
       }
-      setErrors({});
-    } else {
-      setErrors(errors);
     }
   };
 
@@ -104,24 +112,41 @@ const PollForm = () => {
   }, [isEdit, poll]);
   return (
     <Form onSubmit={handleSubmit}>
+      {!isEdit && (
+        <FormGroup>
+          <div className='d-flex align-items-center'>
+            <Label className='creator-label'>Poll Creator</Label>
+            <Input
+              name='creator'
+              value={creator}
+              placeholder='Create a username..'
+              onChange={handleChange}
+            />
+          </div>
+          <FormFeedback className={errors.creator ? 'd-block' : ''}>
+            {errors.creator}
+          </FormFeedback>
+        </FormGroup>
+      )}
       <FormGroup>
-        <Label>Todo Title</Label>
+        <Label>Poll Title</Label>
         <Input
           name='title'
           value={title}
-          placeholder='Enter a todo title'
+          placeholder='Enter a poll title..'
           onChange={handleChange}
+          disabled={isEdit ? true : false}
         />
         <FormFeedback className={errors.title ? 'd-block' : ''}>
           {errors.title}
         </FormFeedback>
       </FormGroup>
       <FormGroup>
-        <Label>Todo Description</Label>
+        <Label>Poll Description</Label>
         <Input
           name='description'
           value={description}
-          placeholder='Enter todo description'
+          placeholder='Enter poll description..'
           onChange={handleChange}
         />
         <FormFeedback className={errors.description ? 'd-block' : ''}>

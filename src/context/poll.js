@@ -1,26 +1,16 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import axios from 'axios';
 import App from '../App';
+
+axios.defaults.baseURL = process.env.REACT_APP_POLL_BACKEND;
 
 const PollContext = createContext();
 
 const PollProvider = () => {
-  const [polls, setPolls] = useState([
-    {
-      description:
-        'What is your favorite programming language for Front End Web Development.',
-      id: 509156922396,
-      options: [
-        { id: 584836466839, name: 'JavaScript', vote: 2 },
-        { id: 776925303531, name: 'C', vote: 0 },
-        { id: 872215455450, name: 'PHP', vote: 1 },
-        { id: 86845405211, name: 'Python', vote: 0 },
-      ],
-      title: 'What is your favorite language?',
-      totalVote: 3,
-    },
-  ]);
-
+  const [polls, setPolls] = useState([]);
   const [poll, setPoll] = useState({});
+
+  const [loading, setLoading] = useState(true);
   const [isOpenForm, setIsOpenForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isEdit, setIsEdit] = useState(false);
@@ -28,52 +18,84 @@ const PollProvider = () => {
 
   const toggleForm = () => setIsOpenForm(!isOpenForm);
   const handleSearch = (value) => setSearchTerm(value);
+
   const createPoll = (poll) => {
     if (polls.find((p) => p.title === poll.title)) {
       setIsPollExist(true);
     } else {
       setIsPollExist(false);
-      setPoll(poll);
-      setPolls([poll, ...polls]);
-      toggleForm();
+      axios
+        .post('/poll', poll)
+        .then((res) => {
+          setPoll(res.data);
+          setPolls([res.data, ...polls]);
+          toggleForm();
+        })
+        .catch((err) => console.log(err));
     }
   };
   const handleDetails = (poll) => {
     setPoll(poll);
   };
   const editPoll = (editedPoll) => {
-    const newPolls = [...polls];
-    let index = newPolls.findIndex((poll) => poll.id === editedPoll.id);
-    newPolls[index] = editedPoll;
+    axios
+      .post(`/poll/${poll.pollId}/edit`, editedPoll)
+      .then((res) => {
+        const newPolls = [...polls];
+        let index = newPolls.findIndex((p) => p.pollId === poll.pollId);
+        newPolls[index] = res.data;
 
-    setPoll(editedPoll);
-    setPolls(newPolls);
-    toggleForm();
-    setIsEdit(false);
+        setPoll(res.data);
+        setPolls(newPolls);
+        toggleForm();
+        setIsEdit(false);
+      })
+      .catch((err) => console.log(err));
   };
   const deletePoll = (pollId) => {
     if (prompt('Are permitted to delete?') === 'firebasePoll') {
-      let newPolls = [...polls];
-      newPolls = newPolls.filter((poll) => poll.id !== pollId);
-      setPoll({});
-      setPolls(newPolls);
+      axios
+        .delete(`/poll/${pollId}`)
+        .then(() => {
+          let newPolls = [...polls];
+          newPolls = newPolls.filter((poll) => poll.pollId !== pollId);
+          setPoll({});
+          setPolls(newPolls);
+        })
+        .catch((err) => console.log(err));
     } else {
       alert('You are not permitted to delete!');
     }
   };
   const submitVote = (pollId, voteId) => {
-    const newPolls = [...polls];
-    let poll = newPolls.find((poll) => poll.id === pollId);
-    poll.totalVote = poll.totalVote + 1;
-    let option = poll.options.find((opt) => opt.id === voteId);
-    option.vote = option.vote + 1;
-    setPolls(newPolls);
+    axios
+      .post(`/poll/${pollId}/vote`, { id: voteId })
+      .then(() => {
+        const newPolls = [...polls];
+        let poll = newPolls.find((poll) => poll.pollId === pollId);
+        poll.totalVote = poll.totalVote + 1;
+        let option = poll.options.find((opt) => opt.id === voteId);
+        option.vote = option.vote + 1;
+        setPolls(newPolls);
+      })
+      .catch((err) => console.log(err));
   };
+
+  useEffect(() => {
+    axios
+      .get('/polls')
+      .then((res) => {
+        setPolls(res.data);
+        setLoading(false);
+      })
+      .catch((err) => setLoading(false));
+  }, []);
   return (
     <PollContext.Provider
       value={{
         polls,
         poll,
+        loading,
         searchTerm,
         isOpenForm,
         isEdit,

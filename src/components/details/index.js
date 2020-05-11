@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import bcrypt from 'bcryptjs';
 import { Card, CardTitle, CardBody, CardText, Button } from 'reactstrap';
 
 import { PollContext } from '../../context/poll';
@@ -6,9 +7,18 @@ import Options from './Options';
 
 const Details = () => {
   const { poll, setIsEdit, toggleForm, deletePoll } = useContext(PollContext);
+
   const handleEdit = () => {
-    setIsEdit(true);
-    toggleForm();
+    const userInput = prompt('If you are owner this poll, enter your username');
+
+    bcrypt.compare(userInput ? userInput : '', poll.creator).then((result) => {
+      if (result === true) {
+        setIsEdit(true);
+        toggleForm();
+      } else {
+        alert('You are not permitted to edit!');
+      }
+    });
   };
 
   return poll.title ? (
@@ -28,14 +38,14 @@ const Details = () => {
             <Button
               className='ml-2'
               color='danger'
-              onClick={() => deletePoll(poll.id)}
+              onClick={() => deletePoll(poll.pollId)}
             >
               Delete
             </Button>
           </div>
         </div>
         <Options
-          pollId={poll.id}
+          pollId={poll.pollId}
           totalVote={poll.totalVote}
           options={poll.options}
         />

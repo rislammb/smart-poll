@@ -37,11 +37,11 @@ const Options = ({ pollId, totalVote, options }) => {
   useEffect(() => {
     setErrors({});
     setVoteId('');
-  }, [pollId]);
+  }, [options]);
   return (
     <Form onSubmit={handleSubmit}>
       {options.map((opt) => (
-        <FormGroup key={opt.id} className='d-flex'>
+        <FormGroup key={opt.id} className='d-flex align-items-center'>
           <CustomInput
             type='radio'
             id={opt.id}
@@ -49,7 +49,10 @@ const Options = ({ pollId, totalVote, options }) => {
             value={opt.id}
             onChange={(e) => setVoteId(e.target.value)}
           />
-          {opt.name}
+          {opt.imageUrl && (
+            <img src={opt.imageUrl} alt='option' className='opt-image' />
+          )}
+          <div>{opt.name}</div>
           <div className='ml-auto'>
             <Button size='sm' color='success'>
               {opt.vote}
@@ -60,7 +63,7 @@ const Options = ({ pollId, totalVote, options }) => {
           </div>
         </FormGroup>
       ))}
-      <FormFeedback className={errors.vote ? 'd-block' : ''}>
+      <FormFeedback className={errors.vote ? 'd-block mb-1' : ''}>
         {errors.vote}
       </FormFeedback>
       <FormGroup>

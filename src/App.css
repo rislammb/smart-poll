@@ -2,14 +2,27 @@ body {
   background-color: #ddd;
 }
 .card {
-  background-color: #f1f1f1;
+  background-color: #eee;
 }
 .list-group {
   max-height: calc(100vh - 168px);
   overflow: auto;
 }
+.list-group-item {
+  cursor: pointer;
+}
 .item-active {
-  background-color: rgb(240, 227, 241);
+  background-color: rgba(238, 130, 238, 0.096);
+}
+.creator-label {
+  width: 130px;
+}
+.opt-image {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  margin: 0 8px 0 2px;
+  border: 1px solid #333;
 }
 @media (max-width: 768px) {
   .container {

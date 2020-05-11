@@ -20,10 +20,10 @@ const ModalForm = () => {
         {isEdit ? 'Edit This Poll' : 'Create A New Poll'}
       </ModalHeader>
       <ModalBody>
-        <FormFeedback className={isPollExist ? 'd-block text-center' : ''}>
-          <strong> This Poll has already exist</strong>
+        <FormFeedback className={isPollExist ? 'd-block text-center mb-3' : ''}>
+          <h6>This Poll has already exist</h6>
         </FormFeedback>
-        <PollForm />
+        <PollForm toggleFormFn={toggleFormFn} />
       </ModalBody>
     </Modal>
   );

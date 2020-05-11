@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import {
+  Spinner,
   Input,
   Button,
   ListGroup,
@@ -13,7 +14,7 @@ import { PollContext } from '../../context/poll';
 import PollList from './PollIist';
 
 const Sidebar = () => {
-  const { polls, searchTerm, handleSearch, toggleForm } = useContext(
+  const { loading, polls, searchTerm, handleSearch, toggleForm } = useContext(
     PollContext
   );
 
@@ -26,7 +27,8 @@ const Sidebar = () => {
     const polls = performSearch();
     return polls.length > 0 ? (
       <ListGroup>
-        {polls && polls.map((poll) => <PollList key={poll.id} poll={poll} />)}
+        {polls &&
+          polls.map((poll) => <PollList key={poll.pollId} poll={poll} />)}
       </ListGroup>
     ) : (
       <ListGroup>
@@ -49,7 +51,15 @@ const Sidebar = () => {
         </div>
         <div>
           <h5>Poll List</h5>
-          {getView()}
+          {loading ? (
+            <div className='text-center'>
+              <Spinner type='grow' color='primary' />
+              <Spinner type='grow' color='secondary' />
+              <Spinner type='grow' color='success' />
+            </div>
+          ) : (
+            getView()
+          )}
         </div>
       </CardBody>
     </Card>

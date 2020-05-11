@@ -8,7 +8,9 @@ const PollList = (props) => {
 
   return (
     <ListGroupItem
-      className={props.poll.id === poll.id ? 'd-flex item-active' : 'd-flex'}
+      className={
+        props.poll.pollId === poll.pollId ? 'd-flex item-active' : 'd-flex'
+      }
       onClick={() => handleDetails(props.poll)}
     >
       <h6 className='text-success'>{props.poll.title}</h6>{' '}
