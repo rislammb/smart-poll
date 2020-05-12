@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css?family=Titillium+Web&display=swap');
 body {
+  font-family: 'Titillium Web', sans-serif;
   background-color: #ddd;
+  font-size: 1.1rem;
 }
 .card {
   background-color: #eee;
@@ -25,6 +28,9 @@ body {
   border: 1px solid #333;
 }
 @media (max-width: 768px) {
+  body {
+    font-size: 0.9rem;
+  }
   .container {
     min-width: 100%;
   }

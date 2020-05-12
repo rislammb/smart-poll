@@ -50,7 +50,7 @@ const Options = ({ pollId, totalVote, options }) => {
             onChange={(e) => setVoteId(e.target.value)}
           />
           {opt.imageUrl && (
-            <img src={opt.imageUrl} alt='option' className='opt-image' />
+            <img src={opt.imageUrl} alt='opt' className='opt-image' />
           )}
           <div>{opt.name}</div>
           <div className='ml-auto'>
