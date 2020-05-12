@@ -2,7 +2,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Open Live
 
-[Click here](https://rislam-stack-todo.netlify.app/)
+[Click here](https://rislam-poll.netlify.app/)
 
 ## Available Scripts
 
