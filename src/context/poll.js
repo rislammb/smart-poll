@@ -53,7 +53,7 @@ const PollProvider = () => {
       .catch((err) => console.log(err));
   };
   const deletePoll = (pollId) => {
-    if (prompt('Are permitted to delete?') === 'firebasePoll') {
+    if (prompt('Are permitted to delete?') === process.env.REACT_APP_DEL_KEY) {
       axios
         .delete(`/poll/${pollId}`)
         .then(() => {
